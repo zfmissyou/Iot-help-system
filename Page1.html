@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Gets the current location and displays it on a Google map</title>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript">
+        function init() {
+            if (navigator.geolocation) {
+                //Gets the current geographic location
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var coords = position.coords;
+                    console.log(position);
+                    var latitude1 = GetQueryString("latit");
+                    var longitude1 = GetQueryString("long");
+                    //Specifies a coordinate point on a Google map, along with the abscissa and ordinate of that coordinate point
+                    //var latlng = new google.maps.LatLng(coords.latitude, coords.longitude);
+                    var latlng = new google.maps.LatLng(latitude1, longitude1);
+                    
+                    var myOptions = {
+                        zoom: 14,    //Set magnification
+                        center: latlng,  //Sets the map center point to the specified coordinate point
+                        mapTypeId: google.maps.MapTypeId.ROADMAP //Specify map type
+                    };
+                    //Create a map and display it in the page map
+                    var map = new google.maps.Map(document.getElementById("map"), myOptions);
+                    //Create markers on the map
+                    var marker = new google.maps.Marker({
+                        position: latlng,    //Let's label the coordinates that we set up before
+                        map: map //Set the annotation to the map you just created
+                    });
+                   
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: "current position：<br/> longitude：" + latlng.lat() + "<br/>Latitude：" + latlng.lng()   //Prompt information in the prompt form
+                    });
+                    
+                    infoWindow.open(map, marker);
+                },
+                function (error) {
+                    
+                    switch (error.code) {
+                        case 1:
+                            alert("Location service rejected。");
+                            break;
+                        case 2:
+                            alert("Location information is not available。");
+                            break;
+                        case 3:
+                            alert("Get information timeout。");
+                            break;
+                        default:
+                            alert("unknown error。");
+                            break;
+                    }
+                });
+            } else {
+                alert("Your browser doesn't support HTML5 to get location information.");
+            }
+        }
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+       
+       
+    </script>
+</head>
+<body onload="init()">
+    <div id="map" style="width: 800px; height: 600px"></div>
+</body>
+</html>
